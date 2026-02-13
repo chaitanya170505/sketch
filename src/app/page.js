@@ -5,7 +5,6 @@ import Header from "@/components/Header";
 import Toolbar from "@/components/Toolbar";
 import Footer from "@/components/Footer";
 
-
 const Whiteboard = dynamic(() => import("@/components/Whiteboard"), { ssr: false });
 
 export default function WhiteboardApp() {
@@ -78,6 +77,11 @@ export default function WhiteboardApp() {
   };
 
   const handleAddSlide = () => {
+    if (slides.length >= 15) {
+      alert("Maximum of 15 slides allowed");
+      return;
+    }
+
     setSlides((prev) => [
       ...prev,
       { id: Date.now(), shapes: [], undoStack: [], redoStack: [], bg: "#ffffff" },
@@ -115,20 +119,21 @@ export default function WhiteboardApp() {
         onAddSlide={handleAddSlide}
       />
 
-      <div className="flex justify-center py-2 border-b border-gray-200 bg-[#f4f7f4]">
-        <Toolbar
-          currentTool={tool}
-          setTool={setTool}
-          strokeColor={color}
-          setStrokeColor={setColor}
-          strokeWidth={width}
-          setStrokeWidth={setWidth}
-          onUndo={handleUndo}
-          onRedo={handleRedo}
-          canUndo={currentSlide.undoStack.length > 0}
-          canRedo={currentSlide.redoStack.length > 0}
-        />
-      </div>
+      <div className="flex justify-center py-2 bg-[#f4f7f4]">
+  <Toolbar
+    currentTool={tool}
+    setTool={setTool}
+    strokeColor={color}
+    setStrokeColor={setColor}
+    strokeWidth={width}
+    setStrokeWidth={setWidth}
+    onUndo={handleUndo}
+    onRedo={handleRedo}
+    canUndo={currentSlide.undoStack.length > 0}
+    canRedo={currentSlide.redoStack.length > 0}
+  />
+</div>
+
 
       <main className="flex-1 overflow-auto p-6 lg:p-10">
         <div className="w-full h-full max-w-[1600px] mx-auto flex items-center justify-center">
@@ -140,11 +145,11 @@ export default function WhiteboardApp() {
             bgFill={currentSlide.bg}
             shapes={currentSlide.shapes}
             setShapes={updateShapes}
-            onActionStart={pushUndo} // <-- fix: push BEFORE drawing starts
+            onActionStart={pushUndo} // push BEFORE drawing starts
           />
         </div>
       </main>
-       <Footer/>
+
     </div>
   );
 }
